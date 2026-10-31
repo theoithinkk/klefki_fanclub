@@ -95,6 +95,35 @@
   .sparkle:nth-of-type(2) { animation-delay: .5s; }
   .sparkle:nth-of-type(3) { animation-delay: 1s; }
   @keyframes twinkle { 0%,100% { opacity: .2; transform: scale(.6); } 50% { opacity: 1; transform: scale(1.1); } }
+  [hidden] { display: none !important; }
+  .gate { margin-top: 8px; }
+  .gate .msg { color: var(--ink); margin-bottom: 12px; }
+  .gate input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 1.05rem;
+    color: var(--ink);
+    background: #f7f9fc;
+  }
+  .gate button {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    background: #ffcb05;
+    color: var(--ink);
+    font-family: "Pixelify Sans", system-ui, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .gate button:active { transform: translateY(1px); }
+  .gate-err { color: var(--red); margin: 10px 0 0; }
 </style>
 </head>
 <body>
@@ -102,7 +131,14 @@
   <h1>Klefki Fan Club</h1>
   <p class="sub">A den for trainers who never lose their keys</p>
 
-  <div class="art">
+  <form class="dialog gate" id="gate" autocomplete="off">
+    <p class="msg">This den is locked. Enter the flag from the confession to continue.</p>
+    <input id="gate-input" type="text" placeholder="Flag{...}" spellcheck="false" autocapitalize="off" aria-label="Previous flag">
+    <button type="submit">Unlock</button>
+    <p class="gate-err" id="gate-err" hidden>That's not it. Check the confession again.</p>
+  </form>
+
+  <div class="art" hidden>
     <img class="klefki" id="klefki" src="klefki.png" alt="Klefki">
     <svg viewBox="0 0 220 220" aria-hidden="true">
       <!-- sparkles (only shown when shiny) -->
@@ -114,7 +150,7 @@
     </svg>
   </div>
 
-  <div class="dialog">
+  <div class="dialog" id="den" hidden>
     <p class="msg" id="msg">Only shiny hunters may enter.</p>
     <div id="reward"></div>
   </div>
@@ -122,8 +158,9 @@
 </main>
 
 <script>
-  // The reward is encrypted. The URL parameter is the key, so nothing readable lives in this file.
-  var vault = {"salt":"4fTG/Vvg04KVY2XFtpJttA==","iv":"vWFQFVDCPYMW3yhQ","data":"BpAguvrUsvMr3qwVSwZCnvuQRDDv2jVVsPkdSAiBOpn748Oej5jf4CFgzzYxayV/1CdQo7nHW/l/u7R44iFRfAk="};
+  // The reward is encrypted. The key is the previous flag plus the URL parameter, so nothing readable lives in this file.
+  var gateHash = "4873f4d4cb5a3fc4322c8842cee9ddbecb477fc7aab22b3fd80fdecf41f3774c";
+  var vault = {"salt":"EACkQvSLPkbqmukI2xvXiw==","iv":"H+TRht3dJQSJqdDd","data":"LRdSGopoD6zhujIgaz/bDySEB4U6QlTNsaPvflwRMtjWNIaaIGC0TvU/cKwYZECc9BmXyFslgjSR6wPY1butscw="};
 
   function fromB64(s) {
     return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); });
@@ -157,8 +194,45 @@
       '<p>Next: ' + link + '</p>';
   }
 
-  var guess = new URLSearchParams(location.search).get("shiny");
-  if (guess) open(guess).then(goShiny, function () {});
+  // Accept "Flag{...}" in any prefix case, or just the part inside the braces.
+  function normalize(s) {
+    s = s.trim();
+    var m = s.match(/^flag\{(.*)\}$/i);
+    return "Flag{" + (m ? m[1] : s) + "}";
+  }
+
+  async function sha256(s) {
+    var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+  }
+
+  function savedPass() {
+    try { return sessionStorage.getItem("klefki-pass"); } catch (e) { return null; }
+  }
+
+  function enterDen(pass) {
+    document.getElementById("gate").hidden = true;
+    document.querySelector(".art").hidden = false;
+    document.getElementById("den").hidden = false;
+    var guess = new URLSearchParams(location.search).get("shiny");
+    if (guess) open(pass + "|" + guess).then(goShiny, function () {});
+  }
+
+  document.getElementById("gate").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var pass = normalize(document.getElementById("gate-input").value);
+    if (await sha256(pass) === gateHash) {
+      try { sessionStorage.setItem("klefki-pass", pass); } catch (err) {}
+      enterDen(pass);
+    } else {
+      document.getElementById("gate-err").hidden = false;
+    }
+  });
+
+  (async function () {
+    var pass = savedPass();
+    if (pass && await sha256(pass) === gateHash) enterDen(pass);
+  })();
 </script>
 </body>
 </html>
