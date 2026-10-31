@@ -215,8 +215,16 @@
     document.querySelector(".art").hidden = false;
     document.getElementById("den").hidden = false;
     var guess = new URLSearchParams(location.search).get("shiny");
-    if (guess) open(pass + "|" + guess).then(goShiny, function () {});
+    if (guess) {
+      open(pass + "|" + guess).then(goShiny, function () {});
+    } else {
+      // The ?shiny clue only shows up once they're inside.
+      history.replaceState(null, "", location.pathname + "?shiny=false");
+    }
   }
+
+  // Before the gate, keep the address clean so the clue isn't visible yet.
+  if (!savedPass() && location.search) history.replaceState(null, "", location.pathname);
 
   document.getElementById("gate").addEventListener("submit", async function (e) {
     e.preventDefault();
