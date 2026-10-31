@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klefki Fan Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #30343f;
+    --muted: #5d6475;
+    --line: #30343f;
+    --red: #d1335b;
+    --link: #2a75bb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #8fd3ff 0%, #d9f2ff 100%);
+    color: var(--ink);
+    font-family: "Pixelify Sans", system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .card {
+    width: 100%;
+    max-width: 440px;
+    background: #ffffff;
+    border: 4px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 20px 22px;
+    text-align: center;
+    box-shadow: 0 6px 0 rgba(48,52,63,.25);
+  }
+  h1 {
+    margin: 0 0 6px;
+    font-family: "Luckiest Guy", sans-serif;
+    font-weight: 400;
+    font-size: 2.4rem;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    color: #ffcb05;
+    -webkit-text-stroke: 8px #2a75bb;
+    paint-order: stroke fill;
+    text-shadow: 3px 4px 0 #1b3f73;
+  }
+  .sub { margin: 0 0 14px; color: var(--muted); font-size: 1rem; }
+  .art { position: relative; width: 240px; max-width: 100%; margin: 0 auto 14px; }
+  .art img { width: 100%; display: block; }
+  .art svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .dialog {
+    position: relative;
+    border: 3px solid var(--line);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 3px #e4e8ef;
+    padding: 14px 16px 18px;
+    text-align: left;
+  }
+  .dialog::after {
+    content: "\25BC";
+    position: absolute;
+    right: 12px;
+    bottom: 4px;
+    font-size: .7rem;
+    color: var(--red);
+    animation: blink 1s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .msg { font-size: 1.2rem; margin: 0; }
+  .locked .msg { color: var(--red); }
+  #reward { text-align: center; }
+  .flag {
+    display: inline-block;
+    margin: 12px 0 6px;
+    padding: 10px 14px;
+    background: #fff4b8;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    font-family: Consolas, "Courier New", monospace;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--ink);
+    word-break: break-all;
+  }
+  #reward p { margin: 6px 0 0; }
+  a { color: var(--link); font-weight: 600; word-break: break-all; }
+  .klefki { animation: jingle 2.4s ease-in-out infinite; transform-origin: 62% 20%; }
+  @keyframes jingle { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+  .sparkle { animation: twinkle 1.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+  .sparkle:nth-of-type(2) { animation-delay: .5s; }
+  .sparkle:nth-of-type(3) { animation-delay: 1s; }
+  @keyframes twinkle { 0%,100% { opacity: .2; transform: scale(.6); } 50% { opacity: 1; transform: scale(1.1); } }
+</style>
+</head>
+<body>
+<main class="card locked" id="card">
+  <h1>Klefki Fan Club</h1>
+  <p class="sub">A den for trainers who never lose their keys</p>
+
+  <div class="art">
+    <img class="klefki" id="klefki" src="klefki.png" alt="Klefki">
+    <svg viewBox="0 0 220 220" aria-hidden="true">
+      <!-- sparkles (only shown when shiny) -->
+      <g id="sparkles" style="display:none" fill="#f0b400">
+        <path class="sparkle" d="M30 50 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4 Z"/>
+        <path class="sparkle" d="M185 30 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3 l8 -3 Z"/>
+        <path class="sparkle" d="M188 170 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3 Z"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="dialog">
+    <p class="msg" id="msg">Only shiny hunters may enter.</p>
+    <div id="reward"></div>
+  </div>
+
+</main>
+
+<script>
+  // The reward is encrypted. The URL parameter is the key, so nothing readable lives in this file.
+  var vault = {"salt":"4fTG/Vvg04KVY2XFtpJttA==","iv":"vWFQFVDCPYMW3yhQ","data":"BpAguvrUsvMr3qwVSwZCnvuQRDDv2jVVsPkdSAiBOpn748Oej5jf4CFgzzYxayV/1CdQo7nHW/l/u7R44iFRfAk="};
+
+  function fromB64(s) {
+    return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); });
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  async function open(guess) {
+    var base = await crypto.subtle.importKey("raw", new TextEncoder().encode(guess), "PBKDF2", false, ["deriveKey"]);
+    var key = await crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt: fromB64(vault.salt), iterations: 150000, hash: "SHA-256" },
+      base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    var plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(vault.iv) }, key, fromB64(vault.data));
+    return JSON.parse(new TextDecoder().decode(plain));
+  }
+
+  function goShiny(reward) {
+    document.getElementById("card").classList.remove("locked");
+    document.getElementById("klefki").src = "klefki-shiny.png";
+    document.getElementById("klefki").alt = "Shiny Klefki";
+    document.getElementById("sparkles").style.display = "";
+    document.getElementById("msg").textContent = "A shiny Klefki appeared! Welcome, hunter.";
+
+    var link = /^https?:\/\//.test(reward.next)
+      ? '<a href="' + escapeHtml(reward.next) + '">' + escapeHtml(reward.next) + '</a>'
+      : escapeHtml(reward.next);
+    document.getElementById("reward").innerHTML =
+      '<div class="flag">' + escapeHtml(reward.flag) + '</div>' +
+      '<p>Next: ' + link + '</p>';
+  }
+
+  var guess = new URLSearchParams(location.search).get("shiny");
+  if (guess) open(guess).then(goShiny, function () {});
+</script>
+</body>
+</html>
