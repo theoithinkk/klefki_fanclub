@@ -356,10 +356,12 @@
         <div class="b me code">3 666 555 555 44 666 88 7777 33</div>
         <div class="b them">got it. that's actually so smart</div>
         <div class="b them">wait so if I find it, what's the password?</div>
-        <div class="b me">you'll know when you get there. just tell me where it is first</div>
+        <div class="b me">you'll know when you get there</div>
+        <div class="stamp">Saturday 00:19</div>
+        <div class="b them">ok I forgot how to read nokia code 😭 just tell me normally where it is</div>
       </div>
       <form class="reply" id="reply" autocomplete="off">
-        <label for="reply-input">Reply to Mika: where did Sky hide it?</label>
+        <label for="reply-input">Mika is still waiting. Reply as Sky: where did you hide it?</label>
         <div class="bar">
           <input class="field" id="reply-input" type="text" placeholder="iMessage" spellcheck="false" autocapitalize="off">
           <button class="send" type="submit" aria-label="Send">↑</button>
@@ -482,9 +484,12 @@
       : escapeHtml(reward.next);
     t.insertAdjacentHTML("beforeend",
       '<div class="b me">' + escapeHtml(input.value) + '</div>' +
-      '<div class="b them">yes!! that\'s exactly where. here\'s what you were looking for</div>' +
+      '<div class="stamp">Now</div>' +
+      '<div class="b them">wait. sky?? you\'ve been offline since the party</div>' +
+      '<div class="b them">...this isn\'t sky, is it</div>' +
+      '<div class="b them">if you\'re trying to find out what happened to her, this was inside the dollhouse</div>' +
       '<div class="flag glass">' + escapeHtml(reward.flag) + '</div>' +
-      '<div class="b them">and if you want to know what really happened to Sky: ' + link + '</div>');
+      '<div class="b them">she left this behind too: ' + link + '</div>');
     document.getElementById("reply").hidden = true;
     t.scrollTop = t.scrollHeight;
   });
