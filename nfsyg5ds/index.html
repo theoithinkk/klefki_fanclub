@@ -4,213 +4,378 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sky's Phone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #f4f6fb;
-    --muted: #a7b0c4;
-    --glass: rgba(255,255,255,.12);
-    --glass-line: rgba(255,255,255,.18);
-    --accent: #7cc4ff;
-    --bad: #ff7a90;
+    --ink: #ffffff;
+    --muted: rgba(255,255,255,.72);
+    --glass: rgba(255,255,255,.16);
+    --glass-strong: rgba(255,255,255,.24);
+    --glass-line: rgba(255,255,255,.28);
+    --blue: #0a84ff;
+    --bad: #ff6b7d;
+    /* Swap this for the wallpaper image when it's ready: url("wallpaper.jpg") center / cover */
+    --wallpaper:
+      radial-gradient(circle at 20% 15%, #ff9ec7 0%, transparent 40%),
+      radial-gradient(circle at 85% 30%, #7aa8ff 0%, transparent 45%),
+      radial-gradient(circle at 50% 90%, #8a5cff 0%, transparent 50%),
+      linear-gradient(160deg, #2a1f5c 0%, #101532 100%);
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  [hidden] { display: none !important; }
   body {
     margin: 0;
     min-height: 100vh;
-    background: #0b0d14;
+    background: #05060a;
     color: var(--ink);
-    font-family: -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+    font-family: -apple-system, "SF Pro Text", "Inter", system-ui, sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 16px;
   }
+
+  /* iPhone frame */
   .phone {
     position: relative;
     width: 100%;
     max-width: 380px;
     height: min(800px, calc(100vh - 32px));
-    min-height: 640px;
-    border-radius: 42px;
-    border: 10px solid #1d2130;
+    min-height: 660px;
+    border-radius: 54px;
+    padding: 11px;
+    background: linear-gradient(145deg, #3a3d46, #15171c);
+    box-shadow: 0 0 0 2px #50545e, 0 30px 80px rgba(0,0,0,.7);
+  }
+  .glass-screen {
+    position: relative;
+    height: 100%;
+    border-radius: 44px;
     overflow: hidden;
-    background: radial-gradient(circle at 30% 10%, #3a4d8f 0%, #1a2142 45%, #0e1122 100%);
-    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    background: var(--wallpaper);
   }
-  .screen { position: absolute; inset: 0; padding: 22px 16px; display: flex; flex-direction: column; overflow-y: auto; }
-  [hidden] { display: none !important; }
-  .status { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); }
-  .clock { text-align: center; margin-top: 12px; }
-  .clock .time { font-size: 3.4rem; font-weight: 200; letter-spacing: 1px; line-height: 1; }
-  .clock .date { color: var(--muted); margin-top: 6px; }
-  .notes { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
-  .note {
-    background: var(--glass);
-    border: 1px solid var(--glass-line);
-    border-radius: 16px;
-    padding: 10px 12px;
-    font-size: .9rem;
+  .island {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 112px;
+    height: 32px;
+    border-radius: 20px;
+    background: #000;
+    z-index: 5;
   }
-  .note .top { display: flex; justify-content: space-between; color: var(--muted); font-size: .75rem; margin-bottom: 3px; }
-  .note b { font-weight: 600; }
-  .prompt { text-align: center; color: var(--muted); font-size: .9rem; margin: 12px 0 8px; }
-  .dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 12px; }
-  .dots span { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--ink); }
-  .dots span.on { background: var(--ink); }
-  .dots.shake { animation: shake .35s; }
-  @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
-  .pad { display: grid; grid-template-columns: repeat(3, 60px); gap: 10px 18px; justify-content: center; }
-  .pad button {
-    width: 60px; height: 60px; border-radius: 50%;
-    border: 1px solid var(--glass-line);
-    background: var(--glass);
-    color: var(--ink);
-    font-size: 1.5rem;
-    font-family: inherit;
-    cursor: pointer;
+  .statusbar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 52px;
+    padding: 16px 30px 0 34px;
+    display: flex;
+    justify-content: space-between;
+    font-size: .92rem;
+    font-weight: 600;
+    z-index: 4;
   }
-  .pad button small { display: block; font-size: .55rem; letter-spacing: 2px; color: var(--muted); margin-top: -2px; }
-  .pad button:active { background: rgba(255,255,255,.3); }
-  .pad .blank { visibility: hidden; }
-  .pad .del { background: none; border: none; font-size: 1rem; }
+  .statusbar .icons { display: flex; gap: 6px; align-items: center; }
+  .statusbar svg { display: block; }
+  .home-bar {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 128px;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255,255,255,.85);
+    z-index: 4;
+  }
 
-  /* recovery gate */
-  .gate { margin: auto 0; text-align: center; }
-  .gate h2 { font-weight: 500; margin: 0 0 6px; }
-  .gate p { color: var(--muted); margin: 0 0 18px; font-size: .95rem; }
-  .gate input, .reply input {
+  .screen {
+    position: absolute;
+    inset: 0;
+    padding: 58px 14px 26px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .blur { backdrop-filter: blur(28px) saturate(140%); -webkit-backdrop-filter: blur(28px) saturate(140%); background: rgba(10,12,30,.35); }
+
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  }
+
+  /* 1. Recovery */
+  .card {
+    margin: auto 6px;
+    border-radius: 26px;
+    padding: 26px 20px 22px;
+    text-align: center;
+  }
+  .card .lock-icon { font-size: 1.8rem; margin-bottom: 6px; }
+  .card h2 { margin: 0 0 6px; font-weight: 600; font-size: 1.25rem; }
+  .card p { margin: 0 0 18px; color: var(--muted); font-size: .92rem; line-height: 1.4; }
+  .field {
     width: 100%;
-    padding: 12px 14px;
+    padding: 13px 14px;
     border-radius: 14px;
     border: 1px solid var(--glass-line);
-    background: rgba(0,0,0,.25);
+    background: rgba(255,255,255,.12);
     color: var(--ink);
-    font-family: Consolas, "Courier New", monospace;
+    font-family: ui-monospace, Consolas, "Courier New", monospace;
     font-size: 1rem;
+    outline: none;
   }
-  .gate button, .reply button {
+  .field::placeholder { color: rgba(255,255,255,.55); }
+  .btn {
     margin-top: 10px;
     width: 100%;
-    padding: 12px;
+    padding: 13px;
     border: none;
     border-radius: 14px;
-    background: var(--accent);
-    color: #0b0d14;
+    background: rgba(255,255,255,.9);
+    color: #111;
+    font-family: inherit;
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
   }
-  .err { color: var(--bad); font-size: .9rem; margin-top: 10px; }
+  .err { color: var(--bad); font-size: .88rem; margin: 10px 0 0; }
 
-  /* messages */
-  .msgs { background: #0e1016; }
-  .thread-head { text-align: center; padding-bottom: 10px; border-bottom: 1px solid #222634; }
-  .thread-head .avatar {
-    width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 4px;
-    background: #5865f2; display: grid; place-items: center; font-weight: 700;
+  /* 2. Lock screen */
+  .lockscreen { align-items: center; }
+  .lockscreen .padlock { font-size: 1rem; margin-top: 2px; opacity: .9; }
+  .lockscreen .date { margin-top: 6px; font-size: 1.15rem; font-weight: 500; color: rgba(255,255,255,.88); }
+  .lockscreen .time {
+    font-family: "SF Pro Rounded", "Inter", -apple-system, sans-serif;
+    font-size: 5.6rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-top: 2px;
+    text-shadow: 0 2px 20px rgba(0,0,0,.15);
   }
-  .thread-head small { color: var(--muted); }
-  .thread { flex: 1; overflow-y: auto; padding: 12px 2px; display: flex; flex-direction: column; gap: 6px; }
-  .stamp { text-align: center; color: var(--muted); font-size: .72rem; margin: 6px 0; }
-  .b { max-width: 78%; padding: 8px 12px; border-radius: 18px; font-size: .95rem; line-height: 1.35; word-wrap: break-word; }
-  .them { align-self: flex-start; background: #262a37; border-bottom-left-radius: 6px; }
-  .me { align-self: flex-end; background: #2f7cf6; border-bottom-right-radius: 6px; }
-  .code { font-family: Consolas, "Courier New", monospace; letter-spacing: .5px; }
-  .reply { border-top: 1px solid #222634; padding-top: 10px; }
-  .reply label { display: block; color: var(--muted); font-size: .8rem; margin-bottom: 6px; }
+  .notifs { width: 100%; margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+  .notif {
+    display: flex;
+    gap: 10px;
+    padding: 11px 12px;
+    border-radius: 22px;
+    cursor: pointer;
+  }
+  .app-icon {
+    flex: none;
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+  }
+  .app-icon.messages { background: linear-gradient(#5cf777, #0fc14f); }
+  .app-icon.reminders { background: #fff; }
+  .notif .body { flex: 1; min-width: 0; }
+  .notif .row { display: flex; justify-content: space-between; gap: 8px; }
+  .notif .who { font-weight: 600; font-size: .92rem; }
+  .notif .when { color: var(--muted); font-size: .8rem; flex: none; }
+  .notif .text { font-size: .9rem; line-height: 1.3; color: rgba(255,255,255,.95); }
+  .swipe { margin-top: 14px; color: var(--muted); font-size: .85rem; text-align: center; cursor: pointer; }
+
+  /* 2b. Passcode */
+  .passcode { align-items: center; }
+  .passcode .title { margin-top: 30px; font-size: 1.15rem; }
+  .dots { display: flex; gap: 18px; margin: 16px 0 28px; }
+  .dots span { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid var(--ink); }
+  .dots span.on { background: var(--ink); }
+  .dots.shake { animation: shake .4s; }
+  @keyframes shake { 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+  .pad { display: grid; grid-template-columns: repeat(3, 76px); gap: 16px 22px; }
+  .key {
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    color: var(--ink);
+    font-family: inherit;
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .key .n { font-size: 2rem; font-weight: 400; line-height: 1; }
+  .key .l { font-size: .58rem; letter-spacing: 2px; font-weight: 600; margin-top: 2px; min-height: .7rem; }
+  .key:active { background: var(--glass-strong); }
+  .pad .spacer { visibility: hidden; }
+  .pad-actions { width: 100%; display: flex; justify-content: space-between; padding: 0 30px; margin-top: auto; font-size: 1rem; }
+  .pad-actions button { background: none; border: none; color: var(--ink); font-family: inherit; font-size: 1rem; cursor: pointer; }
+
+  /* 3. Messages */
+  .msgs { padding: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); }
+  .thread-head {
+    padding: 56px 16px 10px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+  }
+  .avatar {
+    width: 52px; height: 52px; margin: 0 auto 4px; border-radius: 50%;
+    background: linear-gradient(#a3a8b8, #6f7484);
+    display: grid; place-items: center;
+    font-weight: 600; font-size: 1.2rem;
+  }
+  .thread-head .name { font-size: .8rem; }
+  .thread {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding: 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .thread::-webkit-scrollbar { display: none; }
+  .stamp { text-align: center; color: rgba(255,255,255,.5); font-size: .72rem; margin: 10px 0 4px; }
+  .b { max-width: 76%; padding: 8px 13px; border-radius: 19px; font-size: .95rem; line-height: 1.32; word-wrap: break-word; }
+  .them { align-self: flex-start; background: #2c2c2e; }
+  .me { align-self: flex-end; background: var(--blue); }
+  .code { font-family: ui-monospace, Consolas, "Courier New", monospace; letter-spacing: .5px; }
   .flag {
     align-self: center;
-    margin-top: 8px;
+    margin: 10px 0;
     padding: 10px 14px;
-    border: 1px dashed var(--accent);
-    border-radius: 10px;
-    font-family: Consolas, "Courier New", monospace;
+    border-radius: 14px;
+    font-family: ui-monospace, Consolas, "Courier New", monospace;
     font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--accent);
+    font-size: 1.08rem;
   }
-  a { color: var(--accent); word-break: break-all; }
+  .reply { padding: 8px 12px 26px; border-top: 1px solid rgba(255,255,255,.1); }
+  .reply label { display: block; color: rgba(255,255,255,.55); font-size: .78rem; margin: 0 4px 6px; }
+  .reply .bar { display: flex; gap: 8px; align-items: center; }
+  .reply .field { border-radius: 20px; padding: 9px 14px; font-family: inherit; }
+  .send {
+    flex: none;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: var(--blue);
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  a { color: #9fd0ff; word-break: break-all; }
 </style>
 </head>
 <body>
 <div class="phone">
+  <div class="glass-screen">
+    <div class="island"></div>
+    <div class="statusbar">
+      <span id="sb-time">00:21</span>
+      <span class="icons" aria-hidden="true">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#fff"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1" opacity=".35"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="#fff"><path d="M8 2.2c2.4 0 4.6.9 6.2 2.5l1.3-1.3C13.5 1.4 10.9.3 8 .3S2.5 1.4.5 3.4l1.3 1.3C3.4 3.1 5.6 2.2 8 2.2Zm0 3.7c1.4 0 2.6.5 3.6 1.4l1.3-1.3C11.6 4.7 9.9 4 8 4s-3.6.7-4.9 2l1.3 1.3c1-.9 2.2-1.4 3.6-1.4Zm0 3.6c-.5 0-1 .2-1.3.6L8 11.4l1.3-1.3c-.3-.4-.8-.6-1.3-.6Z"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.5" stroke="#fff" opacity=".45"/><rect x="2" y="2" width="4" height="9" rx="2" fill="#ff453a"/><rect x="24.5" y="4.5" width="2" height="4" rx="1" fill="#fff" opacity=".45"/></svg>
+      </span>
+    </div>
 
-  <!-- 1. Recovery gate: the previous flag -->
-  <section class="screen" id="s-gate">
-    <div class="status"><span>No SIM</span><span>12%</span></div>
-    <form class="gate" id="gate" autocomplete="off">
-      <h2>Phone recovery</h2>
-      <p>This device was reported lost. Enter the recovery key to continue.</p>
-      <input id="gate-input" type="text" placeholder="Flag{...}" spellcheck="false" autocapitalize="off" aria-label="Recovery key">
-      <button type="submit">Continue</button>
-      <p class="err" id="gate-err" hidden>Recovery key not recognised.</p>
-    </form>
-  </section>
+    <!-- 1. Recovery: the previous flag -->
+    <section class="screen blur" id="s-gate">
+      <form class="card glass" id="gate" autocomplete="off">
+        <div class="lock-icon">🔒</div>
+        <h2>iPhone Lost</h2>
+        <p>This iPhone was reported lost. Enter the recovery key to continue.</p>
+        <input class="field" id="gate-input" type="text" placeholder="Flag{...}" spellcheck="false" autocapitalize="off" aria-label="Recovery key">
+        <button class="btn" type="submit">Continue</button>
+        <p class="err" id="gate-err" hidden>Recovery key not recognised.</p>
+      </form>
+    </section>
 
-  <!-- 2. Lock screen: the PIN is in the notifications -->
-  <section class="screen" id="s-lock" hidden>
-    <div class="status"><span>No SIM</span><span>12%</span></div>
-    <div class="clock">
+    <!-- 2. Lock screen: the passcode is in the notifications -->
+    <section class="screen lockscreen" id="s-lock" hidden>
+      <div class="padlock">🔒</div>
+      <div class="date">Saturday 25 October</div>
       <div class="time">00:21</div>
-      <div class="date">Saturday, 25 October</div>
-    </div>
-    <div class="notes">
-      <div class="note"><div class="top"><span>Messages</span><span>23:41</span></div><b>Mom</b> where are you?? call me back</div>
-      <div class="note"><div class="top"><span>Messages</span><span>23:58</span></div><b>J</b> please don't post that photo</div>
-      <div class="note"><div class="top"><span>Messages</span><span>00:06</span></div><b>+63 9•• ••• ••21</b> I know what you did</div>
-      <div class="note"><div class="top"><span>Reminders</span><span>00:13</span></div>change the passcode to the moment a stranger first found me</div>
-    </div>
-    <p class="prompt">Enter Passcode</p>
-    <div class="dots" id="dots"><span></span><span></span><span></span><span></span></div>
-    <div class="pad" id="pad">
-      <button data-d="1">1<small>&nbsp;</small></button>
-      <button data-d="2">2<small>ABC</small></button>
-      <button data-d="3">3<small>DEF</small></button>
-      <button data-d="4">4<small>GHI</small></button>
-      <button data-d="5">5<small>JKL</small></button>
-      <button data-d="6">6<small>MNO</small></button>
-      <button data-d="7">7<small>PQRS</small></button>
-      <button data-d="8">8<small>TUV</small></button>
-      <button data-d="9">9<small>WXYZ</small></button>
-      <button class="blank" tabindex="-1" aria-hidden="true"></button>
-      <button data-d="0">0<small>&nbsp;</small></button>
-      <button class="del" id="del">Delete</button>
-    </div>
-  </section>
+      <div class="notifs">
+        <div class="notif glass">
+          <div class="app-icon messages"><svg width="20" height="18" viewBox="0 0 20 18" fill="#fff"><path d="M10 0C4.5 0 0 3.6 0 8c0 2.4 1.3 4.6 3.4 6.1-.2 1.4-.9 2.7-1.9 3.6 2 0 3.8-.8 5.1-1.9 1.1.3 2.2.4 3.4.4 5.5 0 10-3.6 10-8S15.5 0 10 0Z"/></svg></div>
+          <div class="body"><div class="row"><span class="who">Mom</span><span class="when">23:41</span></div><div class="text">where are you?? call me back</div></div>
+        </div>
+        <div class="notif glass">
+          <div class="app-icon messages"><svg width="20" height="18" viewBox="0 0 20 18" fill="#fff"><path d="M10 0C4.5 0 0 3.6 0 8c0 2.4 1.3 4.6 3.4 6.1-.2 1.4-.9 2.7-1.9 3.6 2 0 3.8-.8 5.1-1.9 1.1.3 2.2.4 3.4.4 5.5 0 10-3.6 10-8S15.5 0 10 0Z"/></svg></div>
+          <div class="body"><div class="row"><span class="who">T</span><span class="when">23:58</span></div><div class="text">hey imy why aren't you replying</div></div>
+        </div>
+        <div class="notif glass">
+          <div class="app-icon messages"><svg width="20" height="18" viewBox="0 0 20 18" fill="#fff"><path d="M10 0C4.5 0 0 3.6 0 8c0 2.4 1.3 4.6 3.4 6.1-.2 1.4-.9 2.7-1.9 3.6 2 0 3.8-.8 5.1-1.9 1.1.3 2.2.4 3.4.4 5.5 0 10-3.6 10-8S15.5 0 10 0Z"/></svg></div>
+          <div class="body"><div class="row"><span class="who">+63 9•• ••• ••21</span><span class="when">00:06</span></div><div class="text">I know what you did</div></div>
+        </div>
+        <div class="notif glass">
+          <div class="app-icon reminders"><svg width="22" height="18" viewBox="0 0 22 18"><circle cx="3" cy="3" r="2.6" fill="#0a84ff"/><circle cx="3" cy="9" r="2.6" fill="#ff3b30"/><circle cx="3" cy="15" r="2.6" fill="#ff9f0a"/><rect x="8" y="2" width="14" height="2" rx="1" fill="#c7c7cc"/><rect x="8" y="8" width="14" height="2" rx="1" fill="#c7c7cc"/><rect x="8" y="14" width="14" height="2" rx="1" fill="#c7c7cc"/></svg></div>
+          <div class="body"><div class="row"><span class="who">Reminders</span><span class="when">00:13</span></div><div class="text">change the passcode to the moment a stranger first found me</div></div>
+        </div>
+      </div>
+      <div class="swipe" id="to-pin">Tap to unlock</div>
+    </section>
 
-  <!-- 3. Messages: the keypad code -->
-  <section class="screen msgs" id="s-msgs" hidden>
-    <div class="thread-head">
-      <div class="avatar">M</div>
-      <div>Mika</div>
-      <small>iMessage</small>
-    </div>
-    <div class="thread" id="thread">
-      <div class="stamp">Fri 22:15</div>
-      <div class="b them">are you still bringing it tonight?</div>
-      <div class="b me">not here. someone could be reading over my shoulder</div>
-      <div class="b me">I'll tell you where I hid it the way we used to text in grade school</div>
-      <div class="b them">omg the old nokia way?? ok go</div>
-      <div class="stamp">Fri 22:19</div>
-      <div class="b me code">3 666 555 555 44 666 88 7777 33</div>
-      <div class="b them">got it. that's actually so smart</div>
-      <div class="b them">wait so if I find it, what's the password?</div>
-      <div class="b me">you'll know when you get there. just tell me where it is first</div>
-    </div>
-    <form class="reply" id="reply" autocomplete="off">
-      <label for="reply-input">Reply to Mika: where did Sky hide it?</label>
-      <input id="reply-input" type="text" placeholder="iMessage" spellcheck="false" autocapitalize="off">
-      <button type="submit">Send</button>
-      <p class="err" id="reply-err" hidden>Not delivered. That's not where it is.</p>
-    </form>
-  </section>
+    <!-- 2b. Passcode -->
+    <section class="screen passcode blur" id="s-pin" hidden>
+      <div class="title">Enter Passcode</div>
+      <div class="dots" id="dots"><span></span><span></span><span></span><span></span></div>
+      <div class="pad" id="pad">
+        <button class="key glass" data-d="1"><span class="n">1</span><span class="l"></span></button>
+        <button class="key glass" data-d="2"><span class="n">2</span><span class="l">ABC</span></button>
+        <button class="key glass" data-d="3"><span class="n">3</span><span class="l">DEF</span></button>
+        <button class="key glass" data-d="4"><span class="n">4</span><span class="l">GHI</span></button>
+        <button class="key glass" data-d="5"><span class="n">5</span><span class="l">JKL</span></button>
+        <button class="key glass" data-d="6"><span class="n">6</span><span class="l">MNO</span></button>
+        <button class="key glass" data-d="7"><span class="n">7</span><span class="l">PQRS</span></button>
+        <button class="key glass" data-d="8"><span class="n">8</span><span class="l">TUV</span></button>
+        <button class="key glass" data-d="9"><span class="n">9</span><span class="l">WXYZ</span></button>
+        <span class="spacer"></span>
+        <button class="key glass" data-d="0"><span class="n">0</span><span class="l"></span></button>
+        <span class="spacer"></span>
+      </div>
+      <div class="pad-actions">
+        <button type="button" id="cancel">Cancel</button>
+        <button type="button" id="del">Delete</button>
+      </div>
+    </section>
 
+    <!-- 3. Messages: the keypad code -->
+    <section class="screen msgs" id="s-msgs" hidden>
+      <div class="thread-head">
+        <div class="avatar">M</div>
+        <div class="name">Mika ›</div>
+      </div>
+      <div class="thread" id="thread">
+        <div class="stamp">Friday 22:15</div>
+        <div class="b them">are you still bringing it tonight?</div>
+        <div class="b me">not here. someone could be reading over my shoulder</div>
+        <div class="b me">I'll tell you where I hid it the way we used to text in grade school</div>
+        <div class="b them">omg the old nokia way?? ok go</div>
+        <div class="stamp">Friday 22:19</div>
+        <div class="b me code">3 666 555 555 44 666 88 7777 33</div>
+        <div class="b them">got it. that's actually so smart</div>
+        <div class="b them">wait so if I find it, what's the password?</div>
+        <div class="b me">you'll know when you get there. just tell me where it is first</div>
+      </div>
+      <form class="reply" id="reply" autocomplete="off">
+        <label for="reply-input">Reply to Mika: where did Sky hide it?</label>
+        <div class="bar">
+          <input class="field" id="reply-input" type="text" placeholder="iMessage" spellcheck="false" autocapitalize="off">
+          <button class="send" type="submit" aria-label="Send">↑</button>
+        </div>
+        <p class="err" id="reply-err" hidden>Not delivered. That's not where it is.</p>
+      </form>
+    </section>
+
+    <div class="home-bar"></div>
+  </div>
 </div>
 
 <script>
   // Nothing readable lives here: the answers are stored as hashes and the reward is encrypted.
   var lock = {"gate":"5e26c19edfc8bf23d09537129077ef2c00d18c11007da3abaed31fd56d4d7556","pin":"183a84a73f2ee13153e9fdc07bbe18986e5d9a44e5bfc0a5a6d1cd362dcf04a1","reply":"16c024e4edb3ab41210ab1b77b510811396c0e999be07897912f966677fec6d2"};
-  var vault = {"salt":"X0BAloS4SgIiYRzdvn7YWA==","iv":"mblnkbjol8E9PfKs","data":"ycqHVN6n8CAb4QLaVJlXjRh9WadCHzFmFlJJQKYlFx2SjubNsOxNH2QswdPBkAL0+mtKGqqBENbOC7kkQ7C/aOK6"};
+  var vault = {"salt":"ywffkmHXNP4l7d4x4Kmvjg==","iv":"pbFRtnnCt5cxLrOu","data":"WcSfjpoEA3Z1TY/V9t4KXyv7gF+xZuq2pr8+Iqi/N69QFniMcGfdTW7ZFSx6MBGuqBlhFHRPbETY95fc7viYJMZN"};
 
   function fromB64(s) {
     return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); });
@@ -242,14 +407,14 @@
   }
 
   function show(id) {
-    ["s-gate", "s-lock", "s-msgs"].forEach(function (s) {
+    ["s-gate", "s-lock", "s-pin", "s-msgs"].forEach(function (s) {
       document.getElementById(s).hidden = s !== id;
     });
   }
 
   var state = { pass: "", pin: "" };
 
-  // 1. Recovery gate
+  // 1. Recovery
   document.getElementById("gate").addEventListener("submit", async function (e) {
     e.preventDefault();
     var pass = normalize(document.getElementById("gate-input").value);
@@ -261,7 +426,15 @@
     }
   });
 
-  // 2. Passcode
+  // 2. Lock screen and passcode
+  document.getElementById("to-pin").addEventListener("click", function () { show("s-pin"); });
+  document.querySelectorAll(".notif").forEach(function (n) {
+    n.addEventListener("click", function () { show("s-pin"); });
+  });
+  document.getElementById("cancel").addEventListener("click", function () {
+    entered = ""; paint(); show("s-lock");
+  });
+
   var entered = "";
   var dots = document.querySelectorAll("#dots span");
   function paint() {
@@ -278,17 +451,18 @@
       box.classList.remove("shake");
       void box.offsetWidth;
       box.classList.add("shake");
-      setTimeout(function () { entered = ""; paint(); }, 350);
+      setTimeout(function () { entered = ""; paint(); }, 400);
     }
   }
   document.getElementById("pad").addEventListener("click", function (e) {
     var btn = e.target.closest("button");
-    if (!btn) return;
-    if (btn.id === "del") { entered = entered.slice(0, -1); paint(); return; }
-    if (!btn.dataset.d || entered.length >= 4) return;
+    if (!btn || entered.length >= 4) return;
     entered += btn.dataset.d;
     paint();
     if (entered.length === 4) tryPin();
+  });
+  document.getElementById("del").addEventListener("click", function () {
+    entered = entered.slice(0, -1); paint();
   });
 
   // 3. Reply with the decoded keypad message
@@ -309,7 +483,7 @@
     t.insertAdjacentHTML("beforeend",
       '<div class="b me">' + escapeHtml(input.value) + '</div>' +
       '<div class="b them">yes!! that\'s exactly where. here\'s what you were looking for</div>' +
-      '<div class="flag">' + escapeHtml(reward.flag) + '</div>' +
+      '<div class="flag glass">' + escapeHtml(reward.flag) + '</div>' +
       '<div class="b them">and if you want to know what really happened to Sky: ' + link + '</div>');
     document.getElementById("reply").hidden = true;
     t.scrollTop = t.scrollHeight;
